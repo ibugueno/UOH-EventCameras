@@ -41,4 +41,6 @@ SHELL ["conda", "run", "-n", "v2e", "/bin/bash", "-c"]
 
 #"--overwrite=True", 
 
+
+
 ENTRYPOINT ["conda", "run", "-n", "v2e", "python", v2e.py", "-i", "input/87-25-1920x1080.mp4", "--no_preview", "--timestamp_resolution=.005", "--dvs_exposure", "duration", "0.005", "--output_folder=output/87-25-1920x1080", "--pos_thres=.15", "--neg_thres=.15", "--sigma_thres=0.03", "--dvs_aedat2", "data.aedat", "--output_width=346", "--output_height=260", "--stop_time=3"]
