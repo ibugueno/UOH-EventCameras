@@ -1,46 +1,41 @@
-#FROM nvidia/cuda:10.1-base
+FROM nvidia/cuda:10.1-base-ubuntu18.04
+CMD nvidia-smi
 
-#FROM dokken/ubuntu-18.04
-
-FROM continuumio/miniconda3
+# Use an official pytorch runtime as a parent image
+FROM pytorch/pytorch:1.4-cuda10.1-cudnn7-devel
+CMD ["python"]
 
 RUN apt-get update
 RUN apt-get install libgl1-mesa-glx libjpeg62 -y
+RUN apt-get install ffmpeg -y
+
 
 # Set the working directory to /app
 WORKDIR /app
 
 # Copy the current directory contents into the container at /app
 ADD . /app
+RUN mkdir /app/data
 
-#RUN mkdir /app/data
+
+# make docker use bash instead of sh
+#SHELL ["/bin/bash", "--login", "-c"]
+#COPY entrypoint.sh /usr/local/bin/
+
+
+RUN pip install get-video-properties
 
 RUN conda env create -f environment.yml
 
 
-
-# Make RUN commands use the new environment:
-
-RUN echo "activate environment"
-
-SHELL ["conda", "run", "-n", "v2e", "/bin/bash", "-c"]
+# Make sure the environment is activated:
+RUN echo "ignacio_v2e DB generator"
 
 
+#ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
-## Install any needed packages specified in requirements.txt
-#RUN pip install --trusted-host pypi.python.org -r requirements.txt
+#CMD ["python", "run_v2e.py"]
 
+ENTRYPOINT ["conda", "run", "python", "-u", "run_v2e.py"]
 
-
-
-# Run gan.py
-#CMD ["python3", "-u", "gan_pytorch.py"]
-
-
-#ENTRYPOINT ["conda", "run", "-n", "v2e", "python", "v2e.py", "-i", "data/input/87-25-1920x1080.mp4", "--timestamp_resolution=.005", "--dvs_exposure", "duration=0.005", "--output_folder=data/output/87-25-1920x1080", "--pos_thres=.15", "--neg_thres=.15", "--sigma_thres=0.03", "--dvs_aedat2", "87-25-1920x1080.aedat", "--output_width=346", "--output_height=260", "--stop_time=30"]
-
-#"--overwrite=True", 
-
-
-
-ENTRYPOINT ["conda", "run", "-n", "v2e", "python", v2e.py", "-i", "input/87-25-1920x1080.mp4", "--no_preview", "--timestamp_resolution=.005", "--dvs_exposure", "duration", "0.005", "--output_folder=output/87-25-1920x1080", "--pos_thres=.15", "--neg_thres=.15", "--sigma_thres=0.03", "--dvs_aedat2", "data.aedat", "--output_width=346", "--output_height=260", "--stop_time=3"]
+#ENTRYPOINT ["conda", "run", "-n", "v2e", "python", "-u", "v2e.py", "-i", "input/130-25-1280x720.mp4", "--no_preview", "--timestamp_resolution=.005", "--dvs_exposure", "duration", "0.005", "--output_folder=output/130-25-1280x720", "--pos_thres=.15", "--neg_thres=.15", "--sigma_thres=0.03", "--dvs_aedat2", "data.aedat", "--output_height=195", "--output_width=346"]

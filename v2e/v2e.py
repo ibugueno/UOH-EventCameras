@@ -10,6 +10,9 @@ frames from the original video frames.
 """
 # todo refractory period for pixel
 
+import torch
+import time
+
 import glob
 import argparse
 from pathlib import Path
@@ -59,7 +62,15 @@ def get_args():
         description='v2e: generate simulated DVS events from video.',
         epilog='Run with no --input to open file dialog', allow_abbrev=True,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    
+    print('paser:')
+    print(parser)
+    
     parser = v2e_args(parser)
+
+    print('paser:')
+    print(parser)
+
     parser.add_argument(
         "--rotate180", type=bool, default=False,
         help="rotate all output 180 deg.")
@@ -67,8 +78,13 @@ def get_args():
     # Shellcode (only necessary if global completion is not activated -
     # see Global completion below), to be put in e.g. .bashrc:
     # eval "$(register-python-argcomplete v2e.py)"
+    
+    #parser.add_argument('python', type=bool, default=False)
+    
     argcomplete.autocomplete(parser)
     args = parser.parse_args()
+    
+    
     return args
 
 def makeOutputFolder(output_folder_base, suffix_counter,
@@ -108,6 +124,7 @@ def main():
                        'You can try to install with "pip install Gooey"')
     args=get_args()
     # args=get_args()
+    
     overwrite: bool = args.overwrite
     output_folder: str = args.output_folder
     unique_output_folder: bool = args.unique_output_folder
@@ -520,5 +537,10 @@ def main():
 
 
 if __name__ == "__main__":
+    print('torch.cuda.is_available(): ', torch.cuda.is_available())
+   
+    start_time = time.time()
     main()
+    print("--- %s seconds ---" % (time.time() - start_time))
+    
     v2e_quit()
